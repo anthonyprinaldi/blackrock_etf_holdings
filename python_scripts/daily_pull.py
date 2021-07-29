@@ -19,7 +19,9 @@ from sql_methods import insert_into_sql
 
 def main():
 
-    file_handler = logging.FileHandler("log/daily_pull.log")
+    file_handler = logging.FileHandler(
+        "/home/pi/dev/etf_tracking/python_scripts/log/daily_pull.log"
+    )
     file_handler.setLevel(logging.INFO)
 
     sys_handler = logging.StreamHandler()
@@ -35,7 +37,7 @@ def main():
     logger = logging.getLogger(__name__)
 
     config = cp.ConfigParser()
-    config.read("config.ini")
+    config.read("/home/pi/dev/etf_tracking/python_scripts/config.ini")
     conn = psycopg2.connect(
         host=config["psql"]["host"],
         database=config["psql"]["dbname"],

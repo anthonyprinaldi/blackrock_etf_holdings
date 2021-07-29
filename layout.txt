@@ -1,0 +1,17 @@
+select etf
+
+select frequency
+
+select time range
+
+price chart interactive
+
+top holdings
+
+slider for time range
+
+biggest cange in holdings
+
+tweets on stocks (stock twits)
+
+

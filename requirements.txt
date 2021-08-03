@@ -1,3 +1,4 @@
+ADCDevice==1.0.3
 alpaca-trade-api==1.2.3
 altair==4.1.0
 anyio==3.2.1
@@ -30,6 +31,7 @@ cookies==2.2.1
 cryptography==2.6.1
 cupshelpers==1.0
 dash==1.21.0
+dash-bootstrap-components==0.13.0
 dash-core-components==1.17.1
 dash-html-components==1.1.4
 dash-table==4.12.0

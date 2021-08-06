@@ -150,6 +150,15 @@ app.layout = html.Div(
             style={"margin-bottom": "2rem"},
         ),
         ############################################
+        # DISPLAY MESSAGE ABOUT TABLE
+        ############################################
+        dbc.Row(
+            html.P("The below table shows the one day change in ETF holding positions"),
+            align="center",
+            justify="start",
+            style={"margin-left": "1rem"},
+        ),
+        ############################################
         # SHOW RESULTS OF ETF SELECTION
         ############################################
         dbc.Row(

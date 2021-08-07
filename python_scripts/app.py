@@ -9,7 +9,12 @@ import psycopg2 as psyco
 import numpy as np
 from dash.dependencies import Input, Output
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
+app = dash.Dash(
+    __name__,
+    external_stylesheets=[dbc.themes.FLATLY],
+    update_title=None,
+    title="ETF Dashboard",
+)
 
 conn = psyco.connect(
     dbname="etf_tracking",
@@ -215,4 +220,4 @@ def filter_for_etf(etf_choice):
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run_server(host="10.0.0.6", port="80", debug=False)

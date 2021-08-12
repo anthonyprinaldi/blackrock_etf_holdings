@@ -65,7 +65,7 @@ change AS (
     FROM
         mv
     WHERE
-        dt = CURRENT_DATE
+        dt = (SELECT MAX(dt) FROM etf_holdings)
     ORDER BY
         etf,
         shares_change,
@@ -220,4 +220,4 @@ def filter_for_etf(etf_choice):
 
 
 if __name__ == "__main__":
-    app.run_server(host="10.0.0.6", port="80", debug=False)
+    app.run_server(host="127.0.0.1", port="80", debug=False)

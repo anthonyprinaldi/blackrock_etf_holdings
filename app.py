@@ -18,7 +18,7 @@ app = dash.Dash(
 )
 
 config = cp.ConfigParser()
-config.read("/home/pi/dev/etf_tracking/python_scripts/config.ini")
+config.read("./python_scripts/config.ini")
 conn = psyco.connect(
     host=config["psql"]["host"],
     dbname=config["psql"]["dbname"],
@@ -69,7 +69,7 @@ change AS (
     FROM
         mv
     WHERE
-        dt = CURRENT_DATE
+        dt = (SELECT MAX(dt) FROM etf_holdings)
     ORDER BY
         etf,
         shares_change,

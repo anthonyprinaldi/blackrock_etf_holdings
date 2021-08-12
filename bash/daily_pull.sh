@@ -3,6 +3,7 @@
 # run daily
 now=$(date +'%d-%m-%Y')
 echo $now
-sudo /usr/bin/python /home/pi/dev/etf_tracking/python_scripts/daily_pull.py
+source /home/pi/dev/etf_tracking/etf_env/bin/activate
+python /home/pi/dev/etf_tracking/python_scripts/daily_pull.py
 echo 'DONE'
 read -t 60 -p 'Press any key to continue...'

@@ -8,6 +8,7 @@ import pandas as pd
 import psycopg2 as psyco
 import numpy as np
 from dash.dependencies import Input, Output
+import configparser as cp
 
 app = dash.Dash(
     __name__,
@@ -16,13 +17,16 @@ app = dash.Dash(
     title="ETF Dashboard",
 )
 
+config = cp.ConfigParser()
+config.read("/home/pi/dev/etf_tracking/python_scripts/config.ini")
 conn = psyco.connect(
-    dbname="etf_tracking",
-    user="pi",
-    password="Bbtlwulad04!",
-    host="99.247.122.141",
-    port="5432",
+    host=config["psql"]["host"],
+    dbname=config["psql"]["dbname"],
+    user=config["psql"]["user"],
+    password=config["psql"]["password"],
+    port=config["psql"]["port"],
 )
+
 # df = pd.read_sql("""SELECT * FROM etf_holdings ORDER BY dt LIMIT 100""", conn)
 
 top_mv_shares_change = pd.read_sql(

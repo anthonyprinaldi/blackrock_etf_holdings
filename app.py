@@ -1,3 +1,4 @@
+import argparse
 import configparser as cp
 import signal
 import time
@@ -18,6 +19,17 @@ from dash.dependencies import Input, Output
 UPDATE_HOUR = 11
 
 finished = False
+
+parser = argparse.ArgumentParser("PAT or PROD server")
+parser.add_argument(
+    "location",
+    nargs=1,
+    help="location of host IP",
+    choices=["PAT", "PROD"],
+)
+
+opts = parser.parse_args()
+hosts = {"PAT": "127.0.0.1", "PROD": "10.0.0.6"}
 
 # create function to be called on ctrl + c
 def exit_handler(signum, frame):
@@ -335,6 +347,6 @@ app.index_string = app.index_string = """
 
 if __name__ == "__main__":
     app.run_server(
-        host="10.0.0.6", port="80", debug=False
+        host=hosts[opts.location[0]], port="80", debug=False
     )  # change this back to 10.0.0.6 for PROD
     future.result()

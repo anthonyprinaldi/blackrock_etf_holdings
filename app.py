@@ -1,6 +1,7 @@
 import configparser as cp
-from concurrent.futures import ThreadPoolExecutor
+import signal
 import time
+from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime
 
 import dash
@@ -11,11 +12,24 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 import psycopg2 as psyco
-import psycopg2.extensions
 from dash.dependencies import Input, Output
 
 # time for thread to update database values
 UPDATE_HOUR = 11
+
+finished = False
+
+# create function to be called on ctrl + c
+def exit_handler(signum, frame):
+    global finished
+    finished = True
+    print("Exiting Program...", flush=True)
+    exit(0)
+
+
+# map the above function to ctrl + c
+signal.signal(signal.SIGINT, exit_handler)
+
 
 config = cp.ConfigParser()
 config.read("./python_scripts/config.ini")
@@ -124,13 +138,14 @@ def get_new_top_changes_at(update_at: int = UPDATE_HOUR) -> None:
     Returns:
         [None]: [No return >> updates global variables]
     """
-    while True:
+    global finished
+    while not finished:
         if datetime.now().hour == update_at:
             try:
                 get_new_top_changes()
                 print(f"Data updated at {datetime.now()}", flush=True)
                 print("Sleeping for 22 hours...")
-                time.sleep(79200)
+                time.sleep(1_800)
             except Exception as e:
                 print(f"Exception encountered: {e}\nTrying again...")
         elif datetime.now().hour + 1 == update_at:

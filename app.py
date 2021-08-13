@@ -110,7 +110,7 @@ def get_new_top_changes() -> None:
     print(f"Data pulled at {datetime.now()}", flush=True)
 
 
-def get_new_top_changes_at(time: int = UPDATE_HOUR) -> None:
+def get_new_top_changes_at(update_at: int = UPDATE_HOUR) -> None:
     """Updates the global top_mv_shares_change at certain time of day
 
     Args:
@@ -120,12 +120,12 @@ def get_new_top_changes_at(time: int = UPDATE_HOUR) -> None:
         [None]: [No return >> updates global variables]
     """
     while True:
-        if datetime.now().hour == time:
+        if datetime.now().hour == update_at:
             get_new_top_changes()
             print(f"Data updated at {datetime.now()}", flush=True)
             print("Sleeping for 22 hours...")
             time.sleep(79200)
-        elif datetime.now().hour + 1 == time:
+        elif datetime.now().hour + 1 == update_at:
             # sleep for 10 minutes if we are an hour away from the desired time
             print("Sleeping for 10min...", flush=True)
             time.sleep(600)

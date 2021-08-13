@@ -288,6 +288,36 @@ def filter_for_etf(etf_choice):
     return [dbc.Table.from_dataframe(dff, striped=True, bordered=True, hover=True)]
 
 
+app.index_string = app.index_string = """
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+            <script async src="https://www.googletagmanager.com/gtag/js?id=UA-204885915-1"></script>
+            <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'UA-204885915-1');
+            </script>
+        <!-- End Global Google Analytics -->
+        {%metas%}
+        <title>{%title%}</title>
+        {%favicon%}
+        {%css%}
+    </head>
+    <body>
+        {%app_entry%}
+        <footer>
+            {%config%}
+            {%scripts%}
+            {%renderer%}
+        </footer>
+    </body>
+</html>
+"""
+
 if __name__ == "__main__":
     app.run_server(
         host="10.0.0.6", port="80", debug=False

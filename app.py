@@ -28,8 +28,12 @@ conn = psyco.connect(
 )
 
 # df = pd.read_sql("""SELECT * FROM etf_holdings ORDER BY dt LIMIT 100""", conn)
-def get_new_top_changes() -> None:
-    """Update the global variable top_mv_shares_change with new data on a daily basis"""
+def get_new_top_changes() -> int:
+    """[Update the global variable top_mv_shares_change with new data on a daily basis]
+
+    Returns:
+        int: [0 is success, else -1]
+    """
     global top_mv_shares_change
     top_mv_shares_change = pd.read_sql(
         """
@@ -108,6 +112,7 @@ def get_new_top_changes() -> None:
         conn,
     )
     print(f"Data pulled at {datetime.now()}", flush=True)
+    return 0
 
 
 def get_new_top_changes_at(update_at: int = UPDATE_HOUR) -> None:
@@ -121,10 +126,13 @@ def get_new_top_changes_at(update_at: int = UPDATE_HOUR) -> None:
     """
     while True:
         if datetime.now().hour == update_at:
-            get_new_top_changes()
-            print(f"Data updated at {datetime.now()}", flush=True)
-            print("Sleeping for 22 hours...")
-            time.sleep(79200)
+            try:
+                get_new_top_changes()
+                print(f"Data updated at {datetime.now()}", flush=True)
+                print("Sleeping for 22 hours...")
+                time.sleep(79200)
+            except Exception as e:
+                print(f"Exception encountered: {e}\nTrying again...")
         elif datetime.now().hour + 1 == update_at:
             # sleep for 10 minutes if we are an hour away from the desired time
             print("Sleeping for 10min...", flush=True)
@@ -243,7 +251,7 @@ app.layout = make_layout
 
 # add extra thread for updating the data
 executor = ThreadPoolExecutor(max_workers=1)
-executor.submit(get_new_top_changes_at)
+future = executor.submit(get_new_top_changes_at)
 
 
 ############################################
@@ -284,3 +292,4 @@ if __name__ == "__main__":
     app.run_server(
         host="10.0.0.6", port="80", debug=False
     )  # change this back to 10.0.0.6 for PROD
+    future.result()

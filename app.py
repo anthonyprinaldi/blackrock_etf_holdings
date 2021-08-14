@@ -167,8 +167,8 @@ def get_new_top_changes_at(update_at: int = UPDATE_HOUR) -> None:
             try:
                 get_new_top_changes()
                 print(f"Data pushed at {datetime.now()}", flush=True)
-                print("Sleeping for 30min...")
-                time.sleep(1_800)
+                print("Sleeping for 1 hour...")
+                time.sleep(3_600)
             except Exception as e:
                 print(f"Exception encountered: {e}\nTrying again...")
         elif datetime.now().hour + 1 == update_at:

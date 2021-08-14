@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 import psycopg2 as psyco
+import psycopg2.extensions
 from dash.dependencies import Input, Output
 
 # time for thread to update database values
@@ -43,15 +44,23 @@ def exit_handler(signum, frame):
 signal.signal(signal.SIGINT, exit_handler)
 
 
-config = cp.ConfigParser()
-config.read("./python_scripts/config.ini")
-conn = psyco.connect(
-    host=config["psql"]["host"],
-    dbname=config["psql"]["dbname"],
-    user=config["psql"]["user"],
-    password=config["psql"]["password"],
-    port=config["psql"]["port"],
-)
+def connect_psql() -> psycopg2.extensions.connection:
+    """creates a connection object for psql database
+
+    Returns:
+        psycopg2.extensions.connection: [etf_tracking database connection]
+    """
+    config = cp.ConfigParser()
+    config.read("./python_scripts/config.ini")
+    conn = psyco.connect(
+        host=config["psql"]["host"],
+        dbname=config["psql"]["dbname"],
+        user=config["psql"]["user"],
+        password=config["psql"]["password"],
+        port=config["psql"]["port"],
+    )
+    return conn
+
 
 # df = pd.read_sql("""SELECT * FROM etf_holdings ORDER BY dt LIMIT 100""", conn)
 def get_new_top_changes() -> int:
@@ -60,6 +69,7 @@ def get_new_top_changes() -> int:
     Returns:
         int: [0 is success, else -1]
     """
+    conn = connect_psql()
     global top_mv_shares_change
     top_mv_shares_change = pd.read_sql(
         """
@@ -137,6 +147,7 @@ def get_new_top_changes() -> int:
     """,
         conn,
     )
+    conn.close()
     print(f"Data pulled at {datetime.now()}", flush=True)
     return 0
 
@@ -155,8 +166,8 @@ def get_new_top_changes_at(update_at: int = UPDATE_HOUR) -> None:
         if datetime.now().hour == update_at:
             try:
                 get_new_top_changes()
-                print(f"Data updated at {datetime.now()}", flush=True)
-                print("Sleeping for 22 hours...")
+                print(f"Data pushed at {datetime.now()}", flush=True)
+                print("Sleeping for 30min...")
                 time.sleep(1_800)
             except Exception as e:
                 print(f"Exception encountered: {e}\nTrying again...")

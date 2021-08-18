@@ -52,7 +52,7 @@ def check_for_finished_pull() -> bool:
     """
     with open("./bash/logs/cron.log", "r") as f:
         lines = f.readlines()
-    if lines[-1] == "DONE":
+    if lines[-1].strip() == "DONE":
         return True
     else:
         return False

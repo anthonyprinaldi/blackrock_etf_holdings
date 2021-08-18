@@ -44,6 +44,20 @@ def exit_handler(signum, frame):
 signal.signal(signal.SIGINT, exit_handler)
 
 
+def check_for_finished_pull() -> bool:
+    """check if the daily_pull.sh script has finished
+
+    Returns:
+        bool: [True if the last line in the log file is DONE, else False]
+    """
+    with open("./bash/logs/cron.log", "r") as f:
+        lines = f.readlines()
+    if lines[-1] == "DONE":
+        return True
+    else:
+        return False
+
+
 def connect_psql() -> psycopg2.extensions.connection:
     """creates a connection object for psql database
 
@@ -163,7 +177,7 @@ def get_new_top_changes_at(update_at: int = UPDATE_HOUR) -> None:
     """
     global finished
     while not finished:
-        if datetime.now().hour == update_at:
+        if datetime.now().hour == update_at and check_for_finished_pull():
             try:
                 get_new_top_changes()
                 print(f"Data pushed at {datetime.now()}", flush=True)

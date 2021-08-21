@@ -177,14 +177,18 @@ def get_new_top_changes_at(update_at: int = UPDATE_HOUR) -> None:
     """
     global finished
     while not finished:
-        if datetime.now().hour == update_at and check_for_finished_pull():
-            try:
-                get_new_top_changes()
-                print(f"Data pushed at {datetime.now()}", flush=True)
-                print("Sleeping for 1 hour...")
-                time.sleep(3_600)
-            except Exception as e:
-                print(f"Exception encountered: {e}\nTrying again...")
+        if datetime.now().hour == update_at:
+            if check_for_finished_pull():
+                try:
+                    get_new_top_changes()
+                    print(f"Data pushed at {datetime.now()}", flush=True)
+                    print("Sleeping for 1 hour...")
+                    time.sleep(3_600)
+                except Exception as e:
+                    print(f"Exception encountered: {e}\nTrying again...")
+            else:
+                print("Pull not finished yet...\nSleeping for 10min...")
+                time.sleep(600)
         elif datetime.now().hour + 1 == update_at:
             # sleep for 10 minutes if we are an hour away from the desired time
             print("Sleeping for 10min...", flush=True)

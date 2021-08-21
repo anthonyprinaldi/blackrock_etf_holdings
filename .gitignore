@@ -2,3 +2,4 @@
 *.log
 __pycache__/
 etf_env
+python_scripts/config.ini

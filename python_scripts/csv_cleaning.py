@@ -11,7 +11,8 @@ import psycopg2.extras
 from sql_methods import insert_into_sql
 
 # define global constants
-CASH_FORMAT = "XXX CASH"
+CASH_FORMAT_1 = "XXX CASH"
+CASH_FROMAT_2 = "XXX/XXX"
 
 
 def clean_blackrock_csv(csv_path: str) -> pd.DataFrame:
@@ -77,8 +78,12 @@ def append_stock_ids(
 
         for row in df.itertuples():
             if not (
-                len(str(row.Name).strip()) == len(CASH_FORMAT)
-                and "CASH" in str(row.Name.strip())
+                (
+                    len(str(row.Name).strip()) == len(CASH_FORMAT_1)
+                    and "CASH" in str(row.Name).strip()
+                )
+                or (len(str(row.Name).strip())) == len(CASH_FROMAT_2)
+                and str(row.Name).strip()[3] == "/"
             ):
                 cursor.execute(query, (row.Ticker,))
                 res = cursor.fetchone()
@@ -194,9 +199,9 @@ def main() -> None:
 
     df = groupby_and_convert_types(
         append_stock_ids(
-            clean_blackrock_csv("./data/temp/830.csv"),
+            clean_blackrock_csv("./data/temp/10716.csv"),
             conn,
-            "830",
+            "10716",
         )
     )
     print(df)

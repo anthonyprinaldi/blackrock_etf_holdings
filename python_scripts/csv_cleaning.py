@@ -10,6 +10,9 @@ import psycopg2.extras
 
 from sql_methods import insert_into_sql
 
+# define global constants
+CASH_FORMAT = "XXX CASH"
+
 
 def clean_blackrock_csv(csv_path: str) -> pd.DataFrame:
     """Clean csv files from blackrock holding pages
@@ -73,12 +76,17 @@ def append_stock_ids(
         """
 
         for row in df.itertuples():
-            cursor.execute(query, (row.Ticker,))
-            res = cursor.fetchone()
-            if not (res is None):
-                df.loc[row.Index, "stock_id"] = res["id"]
+            if not (
+                len(row.Name.strip()) == len(CASH_FORMAT) and "CASH" in row.Name.strip()
+            ):
+                cursor.execute(query, (row.Ticker,))
+                res = cursor.fetchone()
+                if not (res is None):
+                    df.loc[row.Index, "stock_id"] = res["id"]
+                else:
+                    logger.debug(f"STOCK {row.Ticker} is not in the stock table")
             else:
-                logger.debug(f"STOCK {row.Ticker} is not in the stock table")
+                logger.debug(f"Skipping over currency: {row.Ticker}")
     return df
 
 

@@ -77,7 +77,8 @@ def append_stock_ids(
 
         for row in df.itertuples():
             if not (
-                len(row.Name.strip()) == len(CASH_FORMAT) and "CASH" in row.Name.strip()
+                len(str(row.Name).strip()) == len(CASH_FORMAT)
+                and "CASH" in str(row.Name.strip())
             ):
                 cursor.execute(query, (row.Ticker,))
                 res = cursor.fetchone()
@@ -166,7 +167,7 @@ def groupby_and_convert_types(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def main() -> None:
-    file_handler = logging.FileHandler("log/csv_cleaning.log")
+    file_handler = logging.FileHandler("./log/csv_cleaning.log")
     file_handler.setLevel(logging.WARN)
 
     sys_handler = logging.StreamHandler()
@@ -183,7 +184,7 @@ def main() -> None:
 
     logger.info("Cleaning CSVs...")
     config = cp.ConfigParser()
-    config.read("config.ini")
+    config.read("./python_scripts/config.ini")
     conn = psycopg2.connect(
         host=config["psql"]["host"],
         database=config["psql"]["dbname"],
@@ -193,9 +194,9 @@ def main() -> None:
 
     df = groupby_and_convert_types(
         append_stock_ids(
-            clean_blackrock_csv("/home/pi/dev/etf_tracking/data/temp/10690.csv"),
+            clean_blackrock_csv("./data/temp/830.csv"),
             conn,
-            "10690",
+            "830",
         )
     )
     print(df)

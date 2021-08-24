@@ -3,3 +3,4 @@
 __pycache__/
 etf_env
 python_scripts/config.ini
+data/temp/

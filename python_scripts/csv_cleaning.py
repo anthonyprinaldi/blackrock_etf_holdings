@@ -10,6 +10,10 @@ import psycopg2.extras
 
 from sql_methods import insert_into_sql
 
+# define global constants
+CASH_FORMAT_1 = "XXX CASH"
+CASH_FROMAT_2 = "XXX/XXX"
+
 
 def clean_blackrock_csv(csv_path: str) -> pd.DataFrame:
     """Clean csv files from blackrock holding pages
@@ -73,12 +77,22 @@ def append_stock_ids(
         """
 
         for row in df.itertuples():
-            cursor.execute(query, (row.Ticker,))
-            res = cursor.fetchone()
-            if not (res is None):
-                df.loc[row.Index, "stock_id"] = res["id"]
+            if not (
+                (
+                    len(str(row.Name).strip()) == len(CASH_FORMAT_1)
+                    and "CASH" in str(row.Name).strip()
+                )
+                or (len(str(row.Name).strip())) == len(CASH_FROMAT_2)
+                and str(row.Name).strip()[3] == "/"
+            ):
+                cursor.execute(query, (row.Ticker,))
+                res = cursor.fetchone()
+                if not (res is None):
+                    df.loc[row.Index, "stock_id"] = res["id"]
+                else:
+                    logger.debug(f"STOCK {row.Ticker} is not in the stock table")
             else:
-                logger.debug(f"STOCK {row.Ticker} is not in the stock table")
+                logger.debug(f"Skipping over currency: {row.Ticker}")
     return df
 
 
@@ -158,7 +172,7 @@ def groupby_and_convert_types(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def main() -> None:
-    file_handler = logging.FileHandler("log/csv_cleaning.log")
+    file_handler = logging.FileHandler("./log/csv_cleaning.log")
     file_handler.setLevel(logging.WARN)
 
     sys_handler = logging.StreamHandler()
@@ -175,7 +189,7 @@ def main() -> None:
 
     logger.info("Cleaning CSVs...")
     config = cp.ConfigParser()
-    config.read("config.ini")
+    config.read("./python_scripts/config.ini")
     conn = psycopg2.connect(
         host=config["psql"]["host"],
         database=config["psql"]["dbname"],
@@ -185,9 +199,9 @@ def main() -> None:
 
     df = groupby_and_convert_types(
         append_stock_ids(
-            clean_blackrock_csv("/home/pi/dev/etf_tracking/data/temp/10690.csv"),
+            clean_blackrock_csv("./data/temp/10716.csv"),
             conn,
-            "10690",
+            "10716",
         )
     )
     print(df)

@@ -19,9 +19,7 @@ from sql_methods import insert_into_sql
 
 def main():
 
-    file_handler = logging.FileHandler(
-        "/home/pi/dev/etf_tracking/python_scripts/log/daily_pull.log"
-    )
+    file_handler = logging.FileHandler("./python_scripts/log/daily_pull.log")
     file_handler.setLevel(logging.INFO)
 
     sys_handler = logging.StreamHandler()
@@ -37,7 +35,7 @@ def main():
     logger = logging.getLogger(__name__)
 
     config = cp.ConfigParser()
-    config.read("/home/pi/dev/etf_tracking/python_scripts/config.ini")
+    config.read("./python_scripts/config.ini")
     conn = psycopg2.connect(
         host=config["psql"]["host"],
         database=config["psql"]["dbname"],
@@ -47,7 +45,7 @@ def main():
 
     # read in etfs to ignore
     ignore_id = []
-    with open("/home/pi/dev/etf_tracking/data/ignore_non_equity_tickers.csv", "r") as f:
+    with open("./data/ignore_non_equity_tickers.csv", "r") as f:
         for row in f:
             row = row.replace("/n", "")
             ignore_id.append(row.split(",")[0])
@@ -55,7 +53,7 @@ def main():
     logger.info("Downloading csvs...")
     download_csv(conn)
 
-    temp_path = "/home/pi/dev/etf_tracking/data/temp"
+    temp_path = "./data/temp"
     files = [f for f in listdir(temp_path) if isfile(join(temp_path, f))]
     logger.info("Beginning to loop over etf_id")
     for etf in files:

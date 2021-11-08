@@ -112,6 +112,8 @@ def get_new_top_changes() -> int:
             etf_holdings
             LEFT JOIN stocks s1 ON etf_holdings.stock_id = s1.id
             LEFT JOIN stocks s2 ON etf_holdings.etf_id = s2.id
+        WHERE dt = (SELECT MAX(dt) FROM etf_holdings)
+        OR dt = (SELECT MAX(dt) FROM etf_holdings WHERE dt != (SELECT MAX(dt) FROM etf_holdings))
     ),
     change AS (
         SELECT

@@ -1,5 +1,6 @@
 import argparse
 import configparser as cp
+import os
 import signal
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -18,18 +19,19 @@ from dash.dependencies import Input, Output
 
 # time for thread to update database values
 UPDATE_HOUR = 11
+DATABASE_URL = os.environ["DATABASE_URL"]
 
 finished = False
 
-parser = argparse.ArgumentParser("PAT or PROD server")
-parser.add_argument(
-    "location",
-    nargs=1,
-    help="location of host IP",
-    choices=["PAT", "PROD"],
-)
+# parser = argparse.ArgumentParser("PAT or PROD server")
+# parser.add_argument(
+#     "location",
+#     nargs=1,
+#     help="location of host IP",
+#     choices=["PAT", "PROD"],
+# )
 
-opts = parser.parse_args()
+# opts = parser.parse_args()
 hosts = {"PAT": "127.0.0.1", "PROD": "10.0.0.6"}
 
 # create function to be called on ctrl + c
@@ -66,13 +68,14 @@ def connect_psql() -> psycopg2.extensions.connection:
     """
     config = cp.ConfigParser()
     config.read("./python_scripts/config.ini")
-    conn = psyco.connect(
-        host=config["psql"]["host"],
-        dbname=config["psql"]["dbname"],
-        user=config["psql"]["user"],
-        password=config["psql"]["password"],
-        port=config["psql"]["port"],
-    )
+    # conn = psyco.connect(
+    #     host=config["psql"]["host"],
+    #     dbname=config["psql"]["dbname"],
+    #     user=config["psql"]["user"],
+    #     password=config["psql"]["password"],
+    #     port=config["psql"]["port"],
+    # )
+    conn = psyco.connect(DATABASE_URL)
     return conn
 
 
@@ -378,6 +381,7 @@ app.index_string = app.index_string = """
 
 if __name__ == "__main__":
     app.run_server(
-        host=hosts[opts.location[0]], port="80", debug=False
+        # host=hosts[opts.location[0]], port="80", debug=False
+        host=hosts["PROD"], port="80", debug=False
     )  # change this back to 10.0.0.6 for PROD
     future.result()

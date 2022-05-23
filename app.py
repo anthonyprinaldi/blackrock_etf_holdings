@@ -303,6 +303,7 @@ app = dash.Dash(
     update_title=None,
     title="ETF Dashboard",
 )
+server = app.server
 
 # load in the data
 get_new_top_changes()
@@ -382,6 +383,8 @@ app.index_string = app.index_string = """
 if __name__ == "__main__":
     app.run_server(
         # host=hosts[opts.location[0]], port="80", debug=False
-        host=hosts["PROD"], port="80", debug=False
+        host="127.0.0.1",
+        port="80",
+        debug=False,
     )  # change this back to 10.0.0.6 for PROD
     future.result()
